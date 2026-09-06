@@ -24,12 +24,6 @@ const projects: Project[] = [
     tags: ["SaaS", "Planning"],
   },
   {
-    name: "Beth's Wedding Expense",
-    description: "Clean expense tracker built for a real wedding — track spending, split costs, stay on budget.",
-    demoUrl: "https://beths-wedding-expense.vercel.app",
-    tags: ["Finance", "Tracker"],
-  },
-  {
     name: "Optimeyed Dashboard",
     description: "Data dashboard with Python backend — transform raw data into actionable insights.",
     demoUrl: "https://optimeyed-dashboard.vercel.app",

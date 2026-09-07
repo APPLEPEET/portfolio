@@ -20,7 +20,7 @@ const projects: Project[] = [
   {
     name: "Portico",
     description: "Wedding planning software to keep everything organized — vendors, timeline, and budget in one place.",
-    demoUrl: "https://portico-app.vercel.app",
+    demoUrl: "https://www.portico-app.com/",
     tags: ["SaaS", "Planning"],
   },
   {

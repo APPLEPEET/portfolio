@@ -1,3 +1,5 @@
+import { useState } from 'react'
+
 export interface Project {
   name: string
   description: string
@@ -11,11 +13,35 @@ interface ProjectCardProps {
   project: Project
 }
 
+function getMicrolinkScreenshotUrl(url: string): string {
+  const params = new URLSearchParams({
+    url,
+    screenshot: 'true',
+    meta: 'false',
+    'embed': 'screenshot.url',
+    'viewport.width': '1280',
+    'viewport.height': '720',
+  })
+  return `https://api.microlink.io?${params.toString()}`
+}
+
+function getInitials(name: string): string {
+  return name
+    .split(/\s+/)
+    .map(word => word[0])
+    .join('')
+    .slice(0, 2)
+    .toUpperCase()
+}
+
 export function ProjectCard({ project }: ProjectCardProps) {
+  const [imageError, setImageError] = useState(false)
+  const screenshotUrl = getMicrolinkScreenshotUrl(project.demoUrl)
+
   return (
     <article 
       className={`
-        group relative rounded-2xl p-6 transition-all duration-300
+        group relative rounded-2xl overflow-hidden transition-all duration-300
         border hover:border-blue-500/30 hover:shadow-lg hover:-translate-y-1
         ${project.featured ? 'md:col-span-2 lg:col-span-1' : ''}
       `}
@@ -25,12 +51,42 @@ export function ProjectCard({ project }: ProjectCardProps) {
       }}
     >
       {project.featured && (
-        <span className="absolute -top-3 left-6 px-3 py-1 text-xs font-medium rounded-full bg-gradient-to-r from-blue-600 to-cyan-500 text-white">
+        <span className="absolute top-3 left-3 z-10 px-3 py-1 text-xs font-medium rounded-full bg-gradient-to-r from-blue-600 to-cyan-500 text-white shadow-md">
           Featured
         </span>
       )}
       
-      <div className="flex flex-col h-full">
+      <a
+        href={project.demoUrl}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="block aspect-video relative overflow-hidden"
+        style={{ backgroundColor: 'var(--color-surface)' }}
+      >
+        {imageError ? (
+          <div 
+            className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-blue-600/20 to-cyan-500/20"
+            aria-hidden="true"
+          >
+            <span 
+              className="text-3xl font-bold opacity-50"
+              style={{ color: 'var(--color-text-secondary)' }}
+            >
+              {getInitials(project.name)}
+            </span>
+          </div>
+        ) : (
+          <img
+            src={screenshotUrl}
+            alt={`Preview of ${project.name}`}
+            loading="lazy"
+            onError={() => setImageError(true)}
+            className="w-full h-full object-cover object-top transition-transform duration-300 group-hover:scale-105"
+          />
+        )}
+      </a>
+      
+      <div className="flex flex-col p-6">
         <h3 className="text-xl font-semibold mb-2 group-hover:text-blue-500 transition-colors" style={{ color: 'var(--color-text)' }}>
           {project.name}
         </h3>

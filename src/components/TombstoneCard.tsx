@@ -105,8 +105,11 @@ export function TombstoneCard({ project, index }: TombstoneCardProps) {
           <div>
             <div className="flex items-start justify-between gap-4 mb-4">
               <h3 
-                className={`font-display font-bold leading-tight ${isFeatured ? 'text-2xl md:text-3xl' : 'text-xl'}`}
-                style={{ color: 'var(--color-ink)' }}
+                className={`font-bold leading-tight ${isFeatured ? 'text-2xl md:text-3xl' : 'text-xl'}`}
+                style={{ 
+                  fontFamily: 'var(--font-display)',
+                  color: 'var(--color-ink)',
+                }}
               >
                 {project.name}
               </h3>

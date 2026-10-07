@@ -76,8 +76,10 @@ function App() {
         <section className="px-6 pt-20 pb-16 md:pt-32 md:pb-24">
           <div className="max-w-6xl mx-auto">
             <h1 
-              className="font-display font-black tracking-tight leading-none mb-8"
+              className="tracking-tight leading-none mb-8"
               style={{ 
+                fontFamily: 'var(--font-display)',
+                fontWeight: 900,
                 color: 'var(--color-ink)',
                 fontSize: 'clamp(3.5rem, 10vw, 9rem)',
                 letterSpacing: '-0.03em',

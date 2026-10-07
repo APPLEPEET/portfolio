@@ -1,7 +1,6 @@
 'use client'
 
-import { useState } from 'react'
-import { motion, useReducedMotion } from 'motion/react'
+import { useState, useEffect, useRef } from 'react'
 
 export interface Project {
   name: string
@@ -10,7 +9,6 @@ export interface Project {
   demoUrl: string
   githubUrl?: string
   stack: string[]
-  year: string
   status: 'LIVE' | 'DEMO'
   featured?: boolean
 }
@@ -18,6 +16,7 @@ export interface Project {
 interface TombstoneCardProps {
   project: Project
   index: number
+  compact?: boolean
 }
 
 function getMicrolinkScreenshotUrl(url: string): string {
@@ -41,32 +40,138 @@ function getInitials(name: string): string {
     .toUpperCase()
 }
 
-export function TombstoneCard({ project, index }: TombstoneCardProps) {
+export function TombstoneCard({ project, index, compact = false }: TombstoneCardProps) {
   const [imageError, setImageError] = useState(false)
   const [isHovered, setIsHovered] = useState(false)
+  const [isVisible, setIsVisible] = useState(false)
+  const [hasAnimated, setHasAnimated] = useState(false)
+  const cardRef = useRef<HTMLElement>(null)
   const screenshotUrl = getMicrolinkScreenshotUrl(project.demoUrl)
-  const reducedMotion = useReducedMotion()
 
-  const isFeatured = project.featured
+  const isFeatured = project.featured && !compact
+
+  useEffect(() => {
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    
+    if (prefersReducedMotion) {
+      setIsVisible(true)
+      setHasAnimated(true)
+      return
+    }
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting && !hasAnimated) {
+            setTimeout(() => {
+              setIsVisible(true)
+              setHasAnimated(true)
+            }, index * 100)
+          }
+        })
+      },
+      { threshold: 0.1 }
+    )
+
+    if (cardRef.current) {
+      observer.observe(cardRef.current)
+    }
+
+    const timeout = setTimeout(() => {
+      setIsVisible(true)
+      setHasAnimated(true)
+    }, 1000 + index * 100)
+
+    return () => {
+      observer.disconnect()
+      clearTimeout(timeout)
+    }
+  }, [index, hasAnimated])
+
+  if (compact) {
+    return (
+      <article
+        ref={cardRef}
+        className="relative"
+        style={{
+          backgroundColor: 'var(--color-surface)',
+          border: '2px solid var(--color-border-strong)',
+        }}
+      >
+        <a
+          href={project.demoUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="block aspect-video relative overflow-hidden"
+          style={{ backgroundColor: 'var(--color-ground)' }}
+        >
+          {imageError ? (
+            <div 
+              className="absolute inset-0 flex items-center justify-center"
+              style={{ backgroundColor: 'var(--color-ground)' }}
+            >
+              <span 
+                className="text-2xl font-mono font-bold"
+                style={{ color: 'var(--color-ink-faint)' }}
+              >
+                {getInitials(project.name)}
+              </span>
+            </div>
+          ) : (
+            <img
+              src={screenshotUrl}
+              alt={`Preview of ${project.name}`}
+              loading="lazy"
+              onError={() => setImageError(true)}
+              className="w-full h-full object-cover object-top"
+            />
+          )}
+        </a>
+        <div className="p-4">
+          <div className="flex items-start justify-between gap-2 mb-2">
+            <h3 
+              className="text-lg font-bold leading-tight"
+              style={{ 
+                fontFamily: 'var(--font-display)',
+                color: 'var(--color-ink)',
+              }}
+            >
+              {project.name}
+            </h3>
+            <span 
+              className="shrink-0 text-[10px] font-mono font-semibold px-1.5 py-0.5"
+              style={{ 
+                backgroundColor: project.status === 'LIVE' ? 'var(--color-signal)' : 'var(--color-surface-elevated)',
+                color: project.status === 'LIVE' ? 'var(--color-ground)' : 'var(--color-ink-muted)',
+              }}
+            >
+              {project.status}
+            </span>
+          </div>
+          <p 
+            className="text-xs font-mono leading-relaxed"
+            style={{ color: 'var(--color-ink-muted)' }}
+          >
+            {project.transaction}
+          </p>
+        </div>
+      </article>
+    )
+  }
 
   return (
-    <motion.article
-      initial={reducedMotion ? false : { opacity: 0, y: 32 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, amount: 0.2 }}
-      transition={{ 
-        duration: 0.5, 
-        delay: reducedMotion ? 0 : index * 0.1,
-        ease: [0.16, 1, 0.3, 1] 
-      }}
+    <article
+      ref={cardRef}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
       className={`relative ${isFeatured ? 'col-span-full' : ''}`}
       style={{
         backgroundColor: 'var(--color-surface)',
         border: `2px solid ${isHovered ? 'var(--color-signal)' : 'var(--color-border-strong)'}`,
-        transition: 'border-color 0.2s ease, box-shadow 0.2s ease',
+        transition: 'opacity 0.5s ease, transform 0.5s ease, border-color 0.2s ease, box-shadow 0.2s ease',
         boxShadow: isHovered ? '0 8px 32px rgba(245, 158, 11, 0.15)' : 'none',
+        opacity: isVisible ? 1 : 0,
+        transform: isVisible ? 'translateY(0)' : 'translateY(24px)',
       }}
     >
       <div className={`${isFeatured ? 'grid md:grid-cols-2 gap-0' : ''}`}>
@@ -154,14 +259,7 @@ export function TombstoneCard({ project, index }: TombstoneCardProps) {
             </div>
           </div>
 
-          <div className="flex items-center justify-between pt-4 border-t" style={{ borderColor: 'var(--color-border)' }}>
-            <span 
-              className="text-2xl font-mono font-bold tabular-nums"
-              style={{ color: 'var(--color-signal)' }}
-            >
-              {project.year}
-            </span>
-
+          <div className="flex items-center justify-end pt-4 border-t" style={{ borderColor: 'var(--color-border)' }}>
             <div className="flex gap-3">
               <a
                 href={project.demoUrl}
@@ -207,6 +305,6 @@ export function TombstoneCard({ project, index }: TombstoneCardProps) {
           backgroundColor: isHovered ? 'var(--color-signal)' : 'transparent',
         }}
       />
-    </motion.article>
+    </article>
   )
 }

@@ -6,66 +6,62 @@ import { Footer } from './components/Footer'
 const projects: Project[] = [
   {
     name: "Buffett's Edge",
-    transaction: "SEC XBRL data visualization platform",
-    description: "Berkshire Hathaway operating segments charted from SEC filings. Visualize capital allocation, identify cash generators vs sinks across the conglomerate.",
+    transaction: "SEC XBRL operating segment visualization",
+    description: "Berkshire Hathaway's operating segments charted from SEC XBRL filings - the part every 13F tracker ignores. Visualize capital allocation across the conglomerate.",
     demoUrl: "https://buffett-edges.vercel.app",
     githubUrl: "https://github.com/APPLEPEET/buffett-edges",
-    stack: ["React", "D3", "SEC XBRL"],
-    year: "2024",
+    stack: ["React", "D3.js", "SEC XBRL"],
     status: "LIVE",
     featured: true,
   },
   {
     name: "Performance Lab",
-    transaction: "Indoor golf facility launch",
-    description: "Landing page for a 24/7 staffless indoor golf club in Belle View. Modern booking and membership system.",
+    transaction: "Indoor golf simulator club",
+    description: "A private, staffless, 24/7 indoor golf simulator club in the Belle Haven area. Modern booking and membership experience.",
     demoUrl: "https://performance-lab-jade.vercel.app",
     stack: ["Next.js", "Tailwind"],
-    year: "2024",
     status: "LIVE",
   },
   {
     name: "Portico",
-    transaction: "Event guest management system",
-    description: "Guest list and address tracker for events. Manage RSVPs, collect mailing addresses, export for invitations.",
+    transaction: "Guest list and address tracker",
+    description: "Imports a messy guest CSV, cleans names into households, collects mailing addresses, and exports vendor-ready packs for invitations.",
     demoUrl: "https://www.portico-app.com/",
-    stack: ["React", "Node", "PostgreSQL"],
-    year: "2024",
+    stack: ["Next.js", "Prisma", "Clerk"],
     status: "LIVE",
   },
   {
     name: "Optimeyed Dashboard",
-    transaction: "Python analytics dashboard",
-    description: "Data dashboard with Python backend. Transform raw data into actionable insights with real-time visualizations.",
+    transaction: "Vision benefits verification platform",
+    description: "Overnight vision-benefits verification for optometry practices plus a 12-week program to lift capture rate and ASP.",
     demoUrl: "https://optimeyed-dashboard.vercel.app",
-    stack: ["Python", "React", "FastAPI"],
-    year: "2023",
+    stack: ["Python", "FastAPI", "React"],
     status: "DEMO",
   },
   {
     name: "Major Madness",
-    transaction: "College major selection tool",
-    description: "Interactive bracket-style application for college major selection. Built with TypeScript for engaging UX.",
+    transaction: "Fantasy golf pools",
+    description: "Fantasy golf pools for the four majors. Draft a roster of golfers, track live scores, and compete on a leaderboard.",
     demoUrl: "https://major-madness-sepia.vercel.app",
     stack: ["TypeScript", "React"],
-    year: "2023",
     status: "DEMO",
   },
 ]
 
 const tickerItems = [
   { label: "Featured", value: "Buffett's Edge", status: "LIVE" as const },
-  { label: "Stack", value: "React / Next.js / Python" },
-  { label: "Year", value: "2024" },
+  { label: "Stack", value: "React / D3.js / SEC XBRL" },
   { label: "Project", value: "Performance Lab", status: "LIVE" as const },
   { label: "Project", value: "Portico", status: "LIVE" as const },
-  { label: "Stack", value: "SEC XBRL / D3 / FastAPI" },
+  { label: "Stack", value: "Next.js / Prisma / Clerk" },
   { label: "Project", value: "Optimeyed", status: "DEMO" as const },
   { label: "Project", value: "Major Madness", status: "DEMO" as const },
+  { label: "Stack", value: "Python / FastAPI / TypeScript" },
 ]
 
+const featuredProject = projects.find(p => p.featured)!
+
 function App() {
-  const featuredProject = projects.find(p => p.featured)
   const otherProjects = projects.filter(p => !p.featured)
 
   return (
@@ -73,45 +69,50 @@ function App() {
       <Header />
       
       <main className="flex-1">
-        <section className="px-6 pt-20 pb-16 md:pt-32 md:pb-24">
+        <section className="px-6 pt-16 pb-12 md:pt-24 md:pb-16">
           <div className="max-w-6xl mx-auto">
-            <h1 
-              className="tracking-tight leading-none mb-8"
-              style={{ 
-                fontFamily: 'var(--font-display)',
-                fontWeight: 900,
-                color: 'var(--color-ink)',
-                fontSize: 'clamp(3.5rem, 10vw, 9rem)',
-                letterSpacing: '-0.03em',
-              }}
-            >
-              Peter<br />
-              <span style={{ color: 'var(--color-signal)' }}>Burrus</span>
-            </h1>
-            
-            <div className="max-w-xl">
-              <p 
-                className="text-lg md:text-xl leading-relaxed mb-6"
-                style={{ color: 'var(--color-ink-muted)' }}
-              >
-                Corp Dev Director. Ex-IB. 75+ deals closed.
-              </p>
-              <p 
-                className="text-base leading-relaxed"
-                style={{ color: 'var(--color-ink-faint)' }}
-              >
-                I build tools that turn messy financial data into clear decisions.
-                From SEC filings to event logistics.
-              </p>
+            <div className="grid md:grid-cols-2 gap-8 md:gap-12 items-start">
+              <div>
+                <h1 
+                  className="tracking-tight leading-none mb-6"
+                  style={{ 
+                    fontFamily: 'var(--font-display)',
+                    fontWeight: 900,
+                    color: 'var(--color-ink)',
+                    fontSize: 'clamp(3rem, 8vw, 7rem)',
+                    letterSpacing: '-0.03em',
+                  }}
+                >
+                  Peter<br />
+                  <span style={{ color: 'var(--color-signal)' }}>Burrus</span>
+                </h1>
+                
+                <p 
+                  className="text-lg md:text-xl leading-relaxed mb-4"
+                  style={{ color: 'var(--color-ink-muted)' }}
+                >
+                  Corp Dev Director. Ex-IB. 75+ deals closed.
+                </p>
+                <p 
+                  className="text-base leading-relaxed"
+                  style={{ color: 'var(--color-ink-faint)' }}
+                >
+                  I build tools that turn messy financial data into clear decisions.
+                </p>
+              </div>
+
+              <div className="hidden md:block">
+                <TombstoneCard project={featuredProject} index={0} compact />
+              </div>
             </div>
           </div>
         </section>
 
         <Ticker items={tickerItems} />
 
-        <section className="px-6 py-20 md:py-28">
+        <section className="px-6 py-16 md:py-24">
           <div className="max-w-6xl mx-auto">
-            <div className="flex items-baseline justify-between mb-12 pb-4 border-b" style={{ borderColor: 'var(--color-border)' }}>
+            <div className="flex items-baseline justify-between mb-10 pb-4 border-b" style={{ borderColor: 'var(--color-border)' }}>
               <h2 
                 className="text-sm font-mono uppercase tracking-widest"
                 style={{ color: 'var(--color-ink-faint)' }}
@@ -126,11 +127,9 @@ function App() {
               </span>
             </div>
 
-            {featuredProject && (
-              <div className="mb-8">
-                <TombstoneCard project={featuredProject} index={0} />
-              </div>
-            )}
+            <div className="mb-8">
+              <TombstoneCard project={featuredProject} index={0} />
+            </div>
 
             <div className="grid md:grid-cols-2 gap-6">
               {otherProjects.map((project, index) => (

@@ -1,110 +1,167 @@
-# Design System: Peter Burrus Portfolio
+# Design System: Deal Sheet Portfolio
 
 ## Design Read
 
-Developer portfolio for a finance and operations builder, with a restrained professional language, leaning toward monospace typography for a data-centric, terminal-adjacent feel.
+Developer portfolio for a Corp Dev Director and ex-IB professional (75+ deals), styled as a terminal/deal book. Bold, ownable, and intentionally finance-coded.
 
-## Design Direction
+## Direction: Deal Sheet
 
-**Source:** The aesthetic draws from the finance/ops domain - Bloomberg terminals, SEC filings, spreadsheet precision. Not artisan craft, not startup tech-bro gradient, not editorial luxury.
+**Source:** M&A tombstones, Bloomberg terminal amber, deal books, pitch decks. The aesthetic of someone who builds tools for finance, not someone marketing to VCs.
 
-**Signature:** JetBrains Mono headlines on a clean slate ground. One flat blue for actions. Cards that vary by importance instead of sitting in identical rows.
+**Signature elements:**
+1. **Tombstone cards** - Project cards styled as framed M&A announcement tombstones
+2. **Ticker strip** - Horizontal scrolling tape with real project facts
 
-## Dials
+## Taste-Skill Dials
 
 | Dial | Value | Rationale |
 |------|-------|-----------|
-| Variance | 6 | Enough asymmetry to feel designed (left-aligned hero, varied card sizes), not chaotic |
-| Motion | 5 | Functional hover states, no scroll animations or entrance effects |
-| Density | 4 | Readable and professional, not cramped |
+| DESIGN_VARIANCE | 8 | Asymmetric layout, varied section rhythm, poster-scale hero |
+| MOTION_INTENSITY | 7 | Ticker marquee, staggered tombstone reveals, signal-color hover states |
+| VISUAL_DENSITY | 6 | Dense metadata in tombstones, ticker strip, mono data labels |
 
 ## Palette
 
 ```css
 :root {
-  /* Ground */
-  --color-ground: #f8fafc;     /* slate-50 */
-  --color-surface: #ffffff;
+  /* Ground - warm charcoal, not pure black */
+  --color-ground: #0f0d0c;
+  --color-surface: #1a1816;
+  --color-surface-elevated: #242120;
   
-  /* Ink */
-  --color-ink: #0f172a;        /* slate-900 - primary text */
-  --color-ink-muted: #475569;  /* slate-600 - secondary text */
-  --color-ink-faint: #64748b;  /* slate-500 - tertiary text */
+  /* Ink - warm off-white */
+  --color-ink: #fafaf9;
+  --color-ink-muted: #a8a29e;
+  --color-ink-faint: #78716c;
   
-  /* Signal */
-  --color-signal: #1d4ed8;     /* blue-700 - links, primary actions */
-  --color-signal-hover: #1e40af; /* blue-800 */
+  /* Signal - Bloomberg amber */
+  --color-signal: #f59e0b;        /* amber-500 */
+  --color-signal-hover: #fbbf24;  /* amber-400 */
+  --color-signal-dim: rgba(245, 158, 11, 0.15);
   
   /* Border */
-  --color-border: #e2e8f0;     /* slate-200 */
-  --color-border-strong: #cbd5e1; /* slate-300 */
+  --color-border: #292524;
+  --color-border-strong: #44403c;
 }
 ```
 
-Dark mode inverts to slate-900 ground with slate-100 ink. Signal shifts to blue-500 for legibility.
+**Rationale:** Warm near-black ground (not pure #000) with Bloomberg-terminal amber as the single hot signal color. Amber evokes financial data displays without falling into the acid-green-on-black second-order AI tell.
 
 ## Typography
 
 | Role | Family | Weight | Use |
 |------|--------|--------|-----|
-| Display | JetBrains Mono | 600 | Headings, name, project titles |
-| Body | System sans | 400 | Paragraphs, descriptions |
-| Data | JetBrains Mono | 400 | Tags, metadata |
+| Display | Outfit | 900 (Black) | Hero headline at poster scale |
+| Headings | Outfit | 700 | Section heads, tombstone titles |
+| Body | Outfit | 400 | Descriptions, paragraphs |
+| Data | JetBrains Mono | 400-600 | Labels, years, status badges, ticker |
 
-**Scale:** 
-- H1: text-3xl to text-5xl
-- H2: text-lg to text-xl
-- Body: text-base to text-lg
-- Small: text-sm, text-xs
+**Hero scale:** `clamp(3.5rem, 10vw, 9rem)` with `-0.03em` letter-spacing and `1.1` line-height.
 
-## Layout
-
-- **Max width:** 5xl (64rem) for content
-- **Hero:** Left-aligned, max-w-2xl text block, no centered template
-- **Cards:** Featured project spans full width with image/text split; secondary projects in 2-col grid
-- **Spacing:** Variable section padding (pt-16/pb-20 for hero, pb-24 for projects)
+**Numeric treatment:** `font-feature-settings: 'tnum' 1` and `tabular-nums` on all numbers for alignment.
 
 ## Components
 
-### Cards
+### Tombstone Card
 
-| Variant | Radius | Use |
-|---------|--------|-----|
-| Featured | 8px | Large project with screenshot and full description |
-| Default | 6px | Secondary projects in grid |
-| Tag | 3px | Small metadata chips |
+Styled as M&A deal announcement frames:
+- 2px solid border (signal color on hover)
+- Left accent bar that reveals on hover
+- Signal-color glow shadow on hover
+- Grid layout: image left, content right (featured) or stacked (default)
 
-No uniform `rounded-2xl`. No `shadow-lg` halos. Border-based elevation.
+**Content structure:**
+1. Project name (large, display font)
+2. Transaction line (mono, describes what it does)
+3. Description (body text)
+4. Stack tags (signal-dim background)
+5. Year (large mono numeral in signal color)
+6. Status badge (LIVE = signal background, DEMO = surface background)
+
+**Motion:**
+- Staggered reveal on scroll (`whileInView`)
+- Border and shadow transition on hover (200ms ease)
+- `prefers-reduced-motion` disables reveals
+
+### Ticker Strip
+
+Horizontally scrolling marquee under the hero:
+- Duplicated content for seamless loop
+- 40s linear infinite animation
+- Items: label (faint) + value (ink) + optional status badge
+- Slash separators between items
+
+**Content rules:** Only REAL facts - project names, stacks, years, status. Never invented metrics.
+
+**Motion:** Stops entirely under `prefers-reduced-motion`.
 
 ### Buttons
 
-- **Primary:** Solid `--color-signal` background, white text, 4px radius
+- **Primary:** Solid signal background, ground text, no border-radius
 - **Secondary:** Border only, ink text
-- No gradients. No pill shapes.
+- No gradients, no rounded pills
 
-### Links
+### Status Badges
 
-- Inline links: `--color-signal` with no underline
-- External icons: small arrow, not appended text arrows
+| Status | Background | Text |
+|--------|------------|------|
+| LIVE | signal | ground |
+| DEMO | surface-elevated | ink-muted |
 
-## What This Design Avoids
+## Layout
 
-Checked against the AI-design tell catalog:
+- **Max width:** 6xl (72rem)
+- **Hero:** Poster-scale headline, left-aligned, name split across lines with signal color on surname
+- **Ticker:** Full-width, border-top and border-bottom
+- **Deal Book section:** Featured tombstone full-width, others in 2-col grid
+- **Asymmetric rhythm:** Hero (pt-20/pb-16 to pt-32/pb-24), ticker (py-4), deal book (py-20 to py-28)
 
-- [x] **No purple/indigo gradient** (was blue-to-cyan in hero)
-- [x] **No gradient text** (was `bg-clip-text` on headline)
-- [x] **No Inter-only typography** (now JetBrains Mono display)
-- [x] **No centered hero template** (now left-aligned)
-- [x] **No uniform `rounded-2xl` cards** (varied radii by component)
-- [x] **No identical 3-col feature grid** (featured card is distinct)
-- [x] **No gradient CTA buttons** (solid flat blue)
-- [x] **No cream/terracotta palette** (slate + blue, finance-derived)
-- [x] **No decorative eyebrow pills** (removed)
-- [x] **prefers-reduced-motion respected** (transitions disabled)
+## Motion Spec
+
+| Element | Trigger | Animation | Duration | Easing |
+|---------|---------|-----------|----------|--------|
+| Tombstone | whileInView | opacity 0→1, y 32→0 | 500ms | [0.16, 1, 0.3, 1] |
+| Tombstone stagger | each card | +100ms delay per index | - | - |
+| Tombstone hover | mouseenter | border-color, box-shadow | 200ms | ease |
+| Ticker | continuous | translateX 0→-50% | 40s | linear |
+
+**Reduced motion:** All animations disabled via CSS `@media (prefers-reduced-motion: reduce)`.
 
 ## Accessibility
 
-- Body text passes WCAG AA (4.5:1) on both light and dark grounds
-- Focus states visible via browser defaults
-- `prefers-reduced-motion: reduce` disables all transitions
-- All images have alt text via component props
+- Body text: #fafaf9 on #0f0d0c = 15.3:1 contrast (AAA)
+- Muted text: #a8a29e on #0f0d0c = 7.1:1 contrast (AAA)
+- Signal on ground: #f59e0b on #0f0d0c = 8.2:1 contrast (AAA)
+- Signal on signal-dim: #f59e0b on rgba(245,158,11,0.15) on #0f0d0c = sufficient
+- Focus states: Browser defaults visible
+- Ticker: Stops under reduced motion
+- All interactive elements: keyboard accessible
+
+## What This Design Avoids
+
+Checked against AI-design tell catalog:
+
+- [x] **No purple/indigo** - uses amber signal
+- [x] **No acid-green-on-near-black** (SD2 second-order tell) - amber is warmer
+- [x] **No default blue-700** - intentional amber tied to finance/terminal aesthetic
+- [x] **No gradient text or buttons** - solid colors only
+- [x] **No uniform rounded-2xl** - sharp edges on tombstones, no radius on buttons
+- [x] **No centered hero template** - left-aligned poster layout
+- [x] **No identical card grid** - featured tombstone distinct from grid
+- [x] **No generic scale-105 hovers** - border color + shadow + accent bar
+- [x] **No fake metrics in ticker** - only real project facts
+- [x] **No Inter-only** - Outfit display + JetBrains Mono data
+- [x] **prefers-reduced-motion respected**
+
+## Files
+
+```
+src/
+  index.css           - Tokens, fonts, ticker keyframes, reduced-motion
+  App.tsx             - Layout, project data, hero, sections
+  components/
+    Header.tsx        - Minimal header with PB logo and GitHub link
+    Footer.tsx        - Footer with branding
+    Ticker.tsx        - Scrolling marquee component
+    TombstoneCard.tsx - Deal tombstone card with Motion reveals
+```
